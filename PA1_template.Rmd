@@ -33,7 +33,22 @@ avginterval[which.max(avginterval$steps), 'interval']
 
 
 ## Imputing missing values
+```{r}
+sum(is.na(activity$steps))
+```
 
+The missing data was filled with the correspondent interval averages shown in the latest plot.
+```{r}
+activity[is.na(activity$steps), 1] <-
+  sapply(activity[is.na(activity$steps), 3],
+         function(row) avginterval[avginterval$interval == row, 2])
+```
 
+```{r}
+dailysteps <- aggregate(activity$steps, by=list(activity$date), FUN=sum)
+hist(dailysteps$x, breaks=8, main="Distribution of daily step totals", xlab="Amount of steps", ylab="Number of days")
+mean(dailysteps$x)
+median(dailysteps$x)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
