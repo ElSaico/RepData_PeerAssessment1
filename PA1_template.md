@@ -5,6 +5,7 @@
 
 ```r
 activity <- read.csv(unz('activity.zip', 'activity.csv'))
+activity$date <- as.Date(activity$date, format='%Y-%m-%d')
 ```
 
 
@@ -39,7 +40,7 @@ median(dailysteps$x, na.rm=TRUE)
 ## What is the average daily activity pattern?
 
 ```r
-avginterval <- with(activity, aggregate(steps ~ interval, FUN=mean, na.rm=TRUE))
+avginterval <- aggregate(steps ~ interval, data=activity, FUN=mean, na.rm=TRUE)
 plot(avginterval, type='l', main="Average step total per 5-minute interval", xlab="Time of day", ylab="Amount of steps")
 ```
 
@@ -98,3 +99,14 @@ median(dailysteps$x)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```r
+weekends <- weekdays(activity$date) %in% c('Saturday', 'Sunday')
+activity$daytype <- factor(weekends, labels=c('weekday', 'weekend'))
+avginterval.daytype <- aggregate(steps ~ interval + daytype, data=activity, FUN=mean)
+
+library(lattice)
+xyplot(steps ~ interval | daytype, avginterval.daytype, xlab='Interval', ylab='Number of steps', type='l', layout=c(1, 2))
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
